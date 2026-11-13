@@ -8,6 +8,6 @@ public class StudentsService(SchoolContext context)
 {
     public List<Student> GetAllStudents()
     {
-        return context.Students.Include<Student, Group>(student => student.StudentGroup).ToList();
+        return context.Students.Include(student => student.StudentGroup).ToList();
     }
 }

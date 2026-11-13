@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using SqlLabbThree.Data;
 using SqlLabbThree.Services;
 
@@ -15,8 +16,6 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
 
     private const string ExitTitle = "Exit";
 
-    private const byte MenuOptionCount = 4;
-
     private readonly string _menuTitle = new string('=', 10) + "School Database" + new string('=', 10);
 
     private readonly List<string> _menuOptions =
@@ -24,23 +23,34 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
         ShowAllStudentsTitle,
         ShowAllStudentsInClassTitle,
         AddNewEmployeeTitle,
-        ExitTitle,
     ];
 
     public void Show()
     {
+        int exitOptionIndex = _menuOptions.Count + 1;
         int userInput;
+        
         do
         {
             Console.WriteLine(_menuTitle);
         
-            for (int index = 0; index < MenuOptionCount; index++)
+            for (int index = 0; index < _menuOptions.Count; index++)
             {
                 Console.WriteLine($"{index + 1}. {_menuOptions[index]}");
             }
+            
+            Console.WriteLine($"{exitOptionIndex}. {ExitTitle}");
 
-            userInput = ReadInteger("Välj ett alternativ: ", 1, MenuOptionCount);
-        } while (HandleUserInput(userInput));
+            userInput = ReadInteger("Choose an option: ", 1, exitOptionIndex);
+            
+            if (userInput == exitOptionIndex)
+            {
+                Console.Clear();
+                Console.WriteLine("Exiting the program...");
+                break;
+            }
+            
+        } while (HandleAndContinue(userInput, exitOptionIndex));
     }
     
     private int ReadInteger(string question, int min, int max)
@@ -54,7 +64,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
 
         while (!int.TryParse(ReadLineOrThrow(), out result) || result < min || result > max)
         {
-            Console.WriteLine($"Ogiltig inmatning. Ange ett tal mellan {min} och {max}.");
+            Console.WriteLine($"Invalid input. Enter a number between {min} and {max}.");
             Console.Write(question);
         }
 
@@ -63,10 +73,10 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
     
     private static string ReadLineOrThrow()
     {
-        return Console.ReadLine() ?? throw new EndOfStreamException("Inmatningen avslutades oväntat.");
+        return Console.ReadLine() ?? throw new EndOfStreamException("Input was unexpectedly terminated.");
     }
     
-    private bool HandleUserInput(int userInput)
+    private bool HandleAndContinue(int userInput, int exitOptionIndex)
     {
         string separatorLine = new string('-', Console.WindowWidth);
         
@@ -90,14 +100,9 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
                 Console.WriteLine(separatorLine);
                 return true; 
             }
-            case MenuOptionCount:
-            {
-                return false;
-            }
             default:
             {
-                Console.WriteLine(separatorLine);
-                return true;
+                throw new UnreachableException($"Invalid input. Enter a number between 1 and {exitOptionIndex}."); 
             }
         }
     }
