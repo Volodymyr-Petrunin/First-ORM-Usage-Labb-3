@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SqlLabbThree.Data;
+using SqlLabbThree.Menu;
 
 namespace SqlLabbThree;
 
@@ -20,6 +21,9 @@ class Program
         }
 
         EnsureConnection();
+
+        MainMenu mainMenu = new MainMenu();
+        mainMenu.Show();
     }
     
     private static void EnsureConnection()
