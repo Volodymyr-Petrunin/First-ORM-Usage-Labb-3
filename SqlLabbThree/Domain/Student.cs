@@ -18,4 +18,9 @@ public partial class Student
     public virtual ICollection<Grade> Grades { get; set; } = new List<Grade>();
 
     public virtual Group? StudentGroup { get; set; }
+    
+    public override string ToString()
+    {
+        return $"{StudentId} {StudentName} {StudentSurname} {StudentPersonalNumber} {StudentGroup?.GroupName}";
+    }
 }

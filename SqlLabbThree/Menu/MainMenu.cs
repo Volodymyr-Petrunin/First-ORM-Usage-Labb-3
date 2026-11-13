@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
+using SqlLabbThree.Data;
+using SqlLabbThree.Services;
 
 namespace SqlLabbThree.Menu;
 
-public class MainMenu
+public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
 {
 
     private const string ShowAllStudentsTitle = "Show all students";
@@ -27,32 +29,32 @@ public class MainMenu
 
     public void Show()
     {
-        bool exit = false;
-
-        Console.WriteLine(_menuTitle);
-        
-        for (int index = 0; index < MenuOptionCount; index++)
+        int userInput;
+        do
         {
-            Console.WriteLine($"{index + 1}. {_menuOptions[index]}");
-        }
+            Console.WriteLine(_menuTitle);
+        
+            for (int index = 0; index < MenuOptionCount; index++)
+            {
+                Console.WriteLine($"{index + 1}. {_menuOptions[index]}");
+            }
 
-        int userInput = ReadInteger("Välj ett alternativ: ", 1, MenuOptionCount, default);
-
-        HandleUserInput(userInput);
+            userInput = ReadInteger("Välj ett alternativ: ", 1, MenuOptionCount);
+        } while (HandleUserInput(userInput));
     }
     
-    private static int ReadInteger(string question, int min, int max, string errorMessage = null!)
+    private int ReadInteger(string question, int min, int max)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan(min, max);
 
-        errorMessage ??= $"Ogiltig inmatning. Ange ett tal mellan {min} och {max}.";
+        Console.WriteLine();
         Console.Write(question);
 
         int result;
 
         while (!int.TryParse(ReadLineOrThrow(), out result) || result < min || result > max)
         {
-            Console.WriteLine(errorMessage);
+            Console.WriteLine($"Ogiltig inmatning. Ange ett tal mellan {min} och {max}.");
             Console.Write(question);
         }
 
@@ -64,18 +66,39 @@ public class MainMenu
         return Console.ReadLine() ?? throw new EndOfStreamException("Inmatningen avslutades oväntat.");
     }
     
-    private static void HandleUserInput(int userInput)
+    private bool HandleUserInput(int userInput)
     {
+        string separatorLine = new string('-', Console.WindowWidth);
+        
         switch (userInput)
         {
             case 1:
-                break;
+            {
+                using var context = new SchoolContext(dbContextOptions);
+                var studentsService = new StudentsService(context);
+                studentsService.GetAllStudents().ForEach(Console.WriteLine);
+                Console.WriteLine(separatorLine);
+                return true;
+            }
             case 2:
-                break;
+            {
+                Console.WriteLine(separatorLine);
+                return true;
+            }
             case 3:
-                break;
+            {
+                Console.WriteLine(separatorLine);
+                return true; 
+            }
             case MenuOptionCount:
-                break;
+            {
+                return false;
+            }
+            default:
+            {
+                Console.WriteLine(separatorLine);
+                return true;
+            }
         }
     }
 }
