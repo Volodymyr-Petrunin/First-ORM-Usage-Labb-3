@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SqlLabbThree.Data;
 using SqlLabbThree.Services;
+using SqlLabbThree.Services.Direction;
 
 namespace SqlLabbThree.Menu;
 
@@ -84,11 +85,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
         {
             case 1:
             {
-                using var context = new SchoolContext(dbContextOptions);
-                var studentsService = new StudentsService(context);
-                studentsService.GetAllStudents().ForEach(Console.WriteLine);
-                Console.WriteLine(separatorLine);
-                return true;
+                return HandleFindAllStudents(separatorLine);
             }
             case 2:
             {
@@ -105,5 +102,40 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
                 throw new UnreachableException($"Invalid input. Enter a number between 1 and {exitOptionIndex}."); 
             }
         }
+    }
+
+    private bool HandleFindAllStudents(string separatorLine)
+    {
+        using var context = new SchoolContext(dbContextOptions);
+        var studentsService = new StudentsService(context);
+
+        Console.WriteLine("How to group students?");
+
+        var readSortOptions = ReadSortOptions();
+
+        studentsService.GetAllStudents(readSortOptions.Field, readSortOptions.Direction).ForEach(Console.WriteLine);
+        Console.WriteLine(separatorLine);
+        return true;
+    }
+
+    private (StudentSortField Field, SortDirection Direction) ReadSortOptions()
+    {
+        Console.WriteLine();
+        Console.WriteLine("Sort by:");
+        Console.WriteLine("1. First name");
+        Console.WriteLine("2. Last name");
+        StudentSortField field = ReadInteger("Choose: ", 1, 2) == 1
+            ? StudentSortField.FirstName
+            : StudentSortField.LastName;
+
+        Console.WriteLine();
+        Console.WriteLine("Order:");
+        Console.WriteLine("1. Ascending");
+        Console.WriteLine("2. Descending");
+        SortDirection direction = ReadInteger("Choose: ", 1, 2) == 1
+            ? SortDirection.Ascending
+            : SortDirection.Descending;
+
+        return (field, direction);
     }
 }
