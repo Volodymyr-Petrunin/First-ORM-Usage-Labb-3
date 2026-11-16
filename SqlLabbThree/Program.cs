@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SqlLabbThree.Data;
 using SqlLabbThree.Menu;
-using SqlLabbThree.Services;
 
 namespace SqlLabbThree;
 
@@ -22,8 +21,9 @@ class Program
         }
 
         EnsureConnection();
-        
-        MainMenu mainMenu = new MainMenu(DbContextOptions);
+
+        var consoleInputValidation = new ConsoleInputValidation();
+        MainMenu mainMenu = new MainMenu(DbContextOptions, consoleInputValidation);
         mainMenu.Show();
     }
     

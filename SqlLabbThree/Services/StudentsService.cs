@@ -10,7 +10,21 @@ public class StudentsService(SchoolContext context)
     public List<Student> GetAllStudents(StudentSortField studentSortField, SortDirection sortDirection)
     {
         IQueryable<Student> query = context.Students.Include(student => student.StudentGroup);
+        
+        return SortStudents(query, studentSortField, sortDirection);
+    }
+    
+    public List<Student> GetStudentsInGroup(int groupId, StudentSortField studentSortField, SortDirection sortDirection)
+    {
+        IQueryable<Student> query = context.Students
+            .Include(student => student.StudentGroup)
+            .Where(student => student.StudentGroupId == groupId);
 
+        return SortStudents(query, studentSortField, sortDirection);
+    }
+    
+    private List<Student> SortStudents(IQueryable<Student> query, StudentSortField studentSortField, SortDirection sortDirection)
+    {
         query = (studentSortField, sortDirection) switch
         {
             (StudentSortField.FirstName, SortDirection.Ascending) => 

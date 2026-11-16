@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using SqlLabbThree.Data;
+using SqlLabbThree.Domain;
 using SqlLabbThree.Services;
-using SqlLabbThree.Services.Direction;
 
 namespace SqlLabbThree.Menu;
 
-public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
+public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleInputValidation inputValidation)
 {
 
     private const string ShowAllStudentsTitle = "Show all students";
@@ -42,39 +42,17 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
             
             Console.WriteLine($"{exitOptionIndex}. {ExitTitle}");
 
-            userInput = ReadInteger("Choose an option: ", 1, exitOptionIndex);
+            userInput = inputValidation.ReadInteger("Choose an option: ", 1, exitOptionIndex);
             
             if (userInput == exitOptionIndex)
             {
                 Console.Clear();
+                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("Exiting the program...");
                 break;
             }
             
         } while (HandleAndContinue(userInput, exitOptionIndex));
-    }
-    
-    private int ReadInteger(string question, int min, int max)
-    {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(min, max);
-
-        Console.WriteLine();
-        Console.Write(question);
-
-        int result;
-
-        while (!int.TryParse(ReadLineOrThrow(), out result) || result < min || result > max)
-        {
-            Console.WriteLine($"Invalid input. Enter a number between {min} and {max}.");
-            Console.Write(question);
-        }
-
-        return result;
-    }
-    
-    private static string ReadLineOrThrow()
-    {
-        return Console.ReadLine() ?? throw new EndOfStreamException("Input was unexpectedly terminated.");
     }
     
     private bool HandleAndContinue(int userInput, int exitOptionIndex)
@@ -89,8 +67,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
             }
             case 2:
             {
-                Console.WriteLine(separatorLine);
-                return true;
+                return HandleFindAllStudentsInGroup(separatorLine);
             }
             case 3:
             {
@@ -111,31 +88,40 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions)
 
         Console.WriteLine("How to group students?");
 
-        var readSortOptions = ReadSortOptions();
+        var readSortOptions = inputValidation.ReadSortOptions();
 
         studentsService.GetAllStudents(readSortOptions.Field, readSortOptions.Direction).ForEach(Console.WriteLine);
         Console.WriteLine(separatorLine);
         return true;
     }
 
-    private (StudentSortField Field, SortDirection Direction) ReadSortOptions()
+    private bool HandleFindAllStudentsInGroup(string separatorLine)
     {
-        Console.WriteLine();
-        Console.WriteLine("Sort by:");
-        Console.WriteLine("1. First name");
-        Console.WriteLine("2. Last name");
-        StudentSortField field = ReadInteger("Choose: ", 1, 2) == 1
-            ? StudentSortField.FirstName
-            : StudentSortField.LastName;
+        using var context = new SchoolContext(dbContextOptions);
+        var studentsService = new StudentsService(context);
+        var groupService = new GroupService(context);
 
-        Console.WriteLine();
-        Console.WriteLine("Order:");
-        Console.WriteLine("1. Ascending");
-        Console.WriteLine("2. Descending");
-        SortDirection direction = ReadInteger("Choose: ", 1, 2) == 1
-            ? SortDirection.Ascending
-            : SortDirection.Descending;
+        int groupId = PickGroup(groupService);
+        var readSortOptions = inputValidation.ReadSortOptions();
 
-        return (field, direction);
+        studentsService.GetStudentsInGroup(groupId, readSortOptions.Field, readSortOptions.Direction).ForEach(Console.WriteLine);
+        
+        Console.WriteLine(separatorLine);
+        return true;
+    }
+
+    private int PickGroup(GroupService groupService)
+    {
+        List<Group> allGroups = groupService.GetAllGroups();
+        int index = 1;
+        
+        foreach (Group group in allGroups)
+        {
+            Console.WriteLine($"{index++} {group.GroupId}: {group.GroupName}");
+        }
+
+        int groupNumber = inputValidation.ReadInteger("Enter group number: ", 1, allGroups.Count);
+
+        return allGroups[groupNumber - 1].GroupId;
     }
 }
