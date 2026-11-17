@@ -23,7 +23,7 @@ class Program
         EnsureConnection();
 
         var consoleInputValidation = new ConsoleInputValidation();
-        MainMenu mainMenu = new MainMenu(DbContextOptions, consoleInputValidation);
+        var mainMenu = new MainMenu(DbContextOptions, consoleInputValidation);
         mainMenu.Show();
     }
     

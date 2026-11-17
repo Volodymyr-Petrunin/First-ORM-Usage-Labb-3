@@ -22,4 +22,16 @@ public partial class Employee
     public virtual ICollection<Course> EcCourses { get; set; } = new List<Course>();
 
     public virtual ICollection<Role> ErRoles { get; set; } = new List<Role>();
+    
+    public Employee(string employeeName, string employeePersonalNumber, string employeeSurname)
+    {
+        EmployeeName = employeeName;
+        EmployeePersonalNumber = employeePersonalNumber;
+        EmployeeSurname = employeeSurname;
+    }
+    
+    public override string ToString()
+    {
+        return $"Employee: {EmployeeName} {EmployeeSurname}, Personal Number: {EmployeePersonalNumber}";
+    }
 }
