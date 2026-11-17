@@ -23,15 +23,15 @@ public partial class Employee
 
     public virtual ICollection<Role> ErRoles { get; set; } = new List<Role>();
     
-    public Employee(string employeeName, string employeePersonalNumber, string employeeSurname)
+    public Employee(string employeeName, string employeeSurname, string employeePersonalNumber)
     {
         EmployeeName = employeeName;
-        EmployeePersonalNumber = employeePersonalNumber;
         EmployeeSurname = employeeSurname;
+        EmployeePersonalNumber = employeePersonalNumber;
     }
     
     public override string ToString()
     {
-        return $"Employee: {EmployeeName} {EmployeeSurname}, Personal Number: {EmployeePersonalNumber}";
+        return $"Employee: ID: {EmployeeId} Full Name: {EmployeeName} {EmployeeSurname}, Personal Number: {EmployeePersonalNumber}";
     }
 }
