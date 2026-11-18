@@ -129,22 +129,9 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         using var context = new SchoolContext(dbContextOptions);
         var employeeService = new EmployeeService(context);
 
-        Console.WriteLine("Enter Employee Name");
-        string? employeeName = Console.ReadLine();
+       
 
-        Console.WriteLine("Enter Employee Surname");
-        string? employeeSurname = Console.ReadLine();
-
-        Console.WriteLine("Enter Employee Personal Number");
-        string? employeePersonalNumber = Console.ReadLine();
-
-        if (employeeName == null || employeeSurname == null || employeePersonalNumber == null)
-        {
-            return false;
-        }
-
-        Employee newEmployee = employeeService.CreateNewEmployee(
-            new Employee(employeeName, employeeSurname, employeePersonalNumber));
+        Employee newEmployee = employeeService.CreateNewEmployee(inputValidation.ReadEmployee());
 
         Console.WriteLine("New Employee Created");
         Console.WriteLine(newEmployee);
