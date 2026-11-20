@@ -13,8 +13,8 @@ GO
 
 SELECT student_name, student_surname, course_name, grade_mark, grade_date
     FROM Students student
-        JOIN Grades grade ON student.student_id = grade.grade_student
-        JOIN Courses cours ON cours.course_id = grade.grade_course
+        LEFT JOIN Grades grade ON student.student_id = grade.grade_student
+        LEFT JOIN Courses cours ON cours.course_id = grade.grade_course
             WHERE grade.grade_date >= DATETRUNC(month, GETDATE())
                 AND grade.grade_date < DATEADD(month, 1, DATETRUNC(month, GETDATE()))
                     ORDER BY grade.grade_date;
@@ -101,6 +101,6 @@ GO
 INSERT INTO Students (student_name, student_surname, student_personal_number, student_group_id)
     VALUES (N'Test', N'Invalid', '19810512-9112', NULL);
 
--- Sucsess Insert--
+-- Success Insert--
 INSERT INTO Students (student_name, student_surname, student_personal_number, student_group_id)
     VALUES (N'Test', N'Valid', '19810512-9111', 1);
