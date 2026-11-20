@@ -3,6 +3,12 @@
          JOIN Employee_Role er ON employee.employee_id = er.er_employee_id
          JOIN Roles role ON er.er_role_id = role.role_id;
 
+SELECT employee.employee_id, employee.employee_name, employee.employee_surname, employee.employee_personal_number, role.role_title
+FROM Employees employee
+         JOIN Employee_Role er ON employee.employee_id = er.er_employee_id
+         JOIN Roles role ON er.er_role_id = role.role_id
+            WHERE role.role_title = 'Teacher';
+
 GO
 
 SELECT student_name, student_surname, course_name, grade_mark, grade_date
