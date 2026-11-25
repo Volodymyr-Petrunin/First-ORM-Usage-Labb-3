@@ -128,9 +128,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
     {
         using var context = new SchoolContext(dbContextOptions);
         var employeeService = new EmployeeService(context);
-
-       
-
+        
         Employee newEmployee = employeeService.CreateNewEmployee(inputValidation.ReadEmployee());
 
         Console.WriteLine("New Employee Created");

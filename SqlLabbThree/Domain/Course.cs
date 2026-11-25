@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SqlLabbThree.Domain;
 
@@ -10,6 +9,12 @@ public partial class Course
     public string CourseName { get; set; } = null!;
 
     public string CourseDescription { get; set; } = null!;
+
+    [Column("course_start_day")]
+    public DateOnly? StartDay { get; set; }
+
+    [Column("course_end_day")]
+    public DateOnly? EndDay { get; set; }
 
     public virtual ICollection<Grade> Grades { get; set; } = new List<Grade>();
 

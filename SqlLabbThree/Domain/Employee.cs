@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace SqlLabbThree.Domain;
 
@@ -12,6 +12,22 @@ public partial class Employee
     public string EmployeeName { get; set; } = null!;
 
     public string EmployeeSurname { get; set; } = null!;
+
+    [Column("employee_salary")]
+    [Precision(10, 2)]
+    public decimal? Salary { get; set; }
+
+    [Column("employee_start_day")]
+    public DateOnly? StartDay { get; set; }
+    
+    [Column("employee_end_day")]
+    public DateOnly? EndDay { get; set; }
+    
+    [Column("department_id")]
+    public int? DepartmentId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.Restrict)]
+    public Department? Department { get; set; }
 
     public virtual ICollection<Grade> Grades { get; set; } = new List<Grade>();
 

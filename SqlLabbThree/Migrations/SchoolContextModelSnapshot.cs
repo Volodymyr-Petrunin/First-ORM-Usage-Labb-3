@@ -78,10 +78,41 @@ namespace SqlLabbThree.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("course_name");
 
+                    b.Property<DateOnly?>("EndDay")
+                        .HasColumnType("date")
+                        .HasColumnName("course_end_day");
+
+                    b.Property<DateOnly?>("StartDay")
+                        .HasColumnType("date")
+                        .HasColumnName("course_start_day");
+
                     b.HasKey("CourseId")
                         .HasName("PK__Courses__8F1EF7AE1DBB19A6");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("SqlLabbThree.Domain.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("department_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("department_name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("SqlLabbThree.Domain.Employee", b =>
@@ -92,6 +123,10 @@ namespace SqlLabbThree.Migrations
                         .HasColumnName("employee_id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"));
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("department_id");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
@@ -112,8 +147,23 @@ namespace SqlLabbThree.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("employee_surname");
 
+                    b.Property<DateOnly?>("EndDay")
+                        .HasColumnType("date")
+                        .HasColumnName("employee_end_day");
+
+                    b.Property<decimal?>("Salary")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("employee_salary");
+
+                    b.Property<DateOnly?>("StartDay")
+                        .HasColumnType("date")
+                        .HasColumnName("employee_start_day");
+
                     b.HasKey("EmployeeId")
                         .HasName("PK__Employee__C52E0BA8DE426717");
+
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex(new[] { "EmployeePersonalNumber" }, "UQ__Employee__A100EF3AF9AB67E8")
                         .IsUnique();
@@ -353,6 +403,16 @@ namespace SqlLabbThree.Migrations
                         .HasConstraintName("FK__Employees__ec_te__628FA481");
                 });
 
+            modelBuilder.Entity("SqlLabbThree.Domain.Employee", b =>
+                {
+                    b.HasOne("SqlLabbThree.Domain.Department", "Department")
+                        .WithMany("Employees")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Department");
+                });
+
             modelBuilder.Entity("SqlLabbThree.Domain.Grade", b =>
                 {
                     b.HasOne("SqlLabbThree.Domain.Course", "GradeCourseNavigation")
@@ -432,6 +492,11 @@ namespace SqlLabbThree.Migrations
                     b.Navigation("Grades");
 
                     b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("SqlLabbThree.Domain.Department", b =>
+                {
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("SqlLabbThree.Domain.Employee", b =>

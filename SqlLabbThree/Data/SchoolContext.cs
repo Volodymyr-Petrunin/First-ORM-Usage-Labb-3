@@ -14,6 +14,8 @@ public partial class SchoolContext : DbContext
 
     public virtual DbSet<Course> Courses { get; set; }
 
+    public virtual DbSet<Department> Departments { get; set; }
+
     public virtual DbSet<Employee> Employees { get; set; }
 
     public virtual DbSet<Grade> Grades { get; set; }
