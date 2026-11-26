@@ -27,7 +27,7 @@ public partial class Employee
     public int DepartmentId { get; set; }
 
     [DeleteBehavior(DeleteBehavior.Restrict)]
-    public Department Department { get; set; } = new Department();
+    public Department Department { get; set; } = null!;
 
     public virtual ICollection<Grade> Grades { get; set; } = new List<Grade>();
 
