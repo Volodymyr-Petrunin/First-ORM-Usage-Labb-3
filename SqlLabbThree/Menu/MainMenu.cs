@@ -16,6 +16,12 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
 
     private const string AddNewEmployeeTitle = "Add new employee";
 
+    private const string CountTeachersInDepartmentTitle = "Count teachers in department";
+
+    private const string ListOfAllActiveCoursesTitle = "List of all active courses";
+
+    private const string UpdateStudentInfoTitle = "Update student info";
+
     private const string ExitTitle = "Exit";
 
     private readonly string _menuTitle = new string('=', 10) + "School Database" + new string('=', 10);
@@ -25,6 +31,9 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         ShowAllStudentsTitle,
         ShowAllStudentsInClassTitle,
         AddNewEmployeeTitle,
+        CountTeachersInDepartmentTitle,
+        ListOfAllActiveCoursesTitle,
+        UpdateStudentInfoTitle,
     ];
 
     public void Show()
@@ -73,6 +82,10 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
             case 3:
             {
                 return HandleCreateEmployee(separatorLine);
+            }
+            case 4:
+            {
+                return CountTeachersInDepartment(separatorLine);
             }
             default:
             {
@@ -181,5 +194,20 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
 
             Console.WriteLine($"Invalid salary. Enter a number between 0.01 and {maxSalary}.");
         }
+    }
+
+    private bool CountTeachersInDepartment(string separatorLine)
+    {
+        using var context = new SchoolContext(dbContextOptions);
+        var departmentService = new DepartmentService(context);
+        var teachersInDepartment = departmentService.CountTeachersInDepartment();
+        
+        foreach (var (departmentName, teachersCount) in teachersInDepartment)
+        {
+            Console.WriteLine($"{departmentName}: {teachersCount}");
+        }
+        
+        Console.WriteLine(separatorLine);
+        return true;
     }
 }
