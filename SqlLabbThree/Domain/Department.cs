@@ -18,5 +18,5 @@ public class Department
     [MaxLength(50)]
     public string Name { get; set; }
     
-    public List<Employee> Employees { get; set; } = new List<Employee>();
+    public List<Employee> Employees { get; set; } = null!;
 }

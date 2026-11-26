@@ -82,14 +82,17 @@ namespace SqlLabbThree.Migrations
                         .HasColumnType("date")
                         .HasColumnName("course_end_day");
 
-                    b.Property<DateOnly?>("StartDay")
+                    b.Property<DateOnly>("StartDay")
                         .HasColumnType("date")
                         .HasColumnName("course_start_day");
 
                     b.HasKey("CourseId")
                         .HasName("PK__Courses__8F1EF7AE1DBB19A6");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", t =>
+                        {
+                            t.HasCheckConstraint("CK_Courses_EndAfterStart", "course_end_day IS NULL OR course_end_day >= course_start_day");
+                        });
                 });
 
             modelBuilder.Entity("SqlLabbThree.Domain.Department", b =>
@@ -124,7 +127,7 @@ namespace SqlLabbThree.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeId"));
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int")
                         .HasColumnName("department_id");
 
@@ -151,12 +154,12 @@ namespace SqlLabbThree.Migrations
                         .HasColumnType("date")
                         .HasColumnName("employee_end_day");
 
-                    b.Property<decimal?>("Salary")
+                    b.Property<decimal>("Salary")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("employee_salary");
 
-                    b.Property<DateOnly?>("StartDay")
+                    b.Property<DateOnly>("StartDay")
                         .HasColumnType("date")
                         .HasColumnName("employee_start_day");
 
@@ -168,7 +171,12 @@ namespace SqlLabbThree.Migrations
                     b.HasIndex(new[] { "EmployeePersonalNumber" }, "UQ__Employee__A100EF3AF9AB67E8")
                         .IsUnique();
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", t =>
+                        {
+                            t.HasCheckConstraint("CK_Employees_EndAfterStart", "employee_end_day IS NULL OR employee_end_day >= employee_start_day");
+
+                            t.HasCheckConstraint("CK_Employees_SalaryPositive", "employee_salary > 0");
+                        });
                 });
 
             modelBuilder.Entity("SqlLabbThree.Domain.Grade", b =>
@@ -408,7 +416,8 @@ namespace SqlLabbThree.Migrations
                     b.HasOne("SqlLabbThree.Domain.Department", "Department")
                         .WithMany("Employees")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Department");
                 });

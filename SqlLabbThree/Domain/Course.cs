@@ -11,7 +11,7 @@ public partial class Course
     public string CourseDescription { get; set; } = null!;
 
     [Column("course_start_day")]
-    public DateOnly? StartDay { get; set; }
+    public DateOnly StartDay { get; set; }
 
     [Column("course_end_day")]
     public DateOnly? EndDay { get; set; }

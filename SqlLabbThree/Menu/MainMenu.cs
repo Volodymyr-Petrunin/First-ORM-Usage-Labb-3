@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using SqlLabbThree.Data;
 using SqlLabbThree.Domain;
@@ -128,12 +129,57 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
     {
         using var context = new SchoolContext(dbContextOptions);
         var employeeService = new EmployeeService(context);
-        
-        Employee newEmployee = employeeService.CreateNewEmployee(inputValidation.ReadEmployee());
 
-        Console.WriteLine("New Employee Created");
-        Console.WriteLine(newEmployee);
+        Employee employee = inputValidation.ReadEmployee();
+
+        List<Department> departments = context.Set<Department>()
+            .AsNoTracking()
+            .OrderBy(d => d.Name)
+            .ToList();
+
+        Console.WriteLine();
+        for (int index = 0; index < departments.Count; index++)
+        {
+            Console.WriteLine($"{index + 1}. {departments[index].Name}");
+        }
+
+        int choice = inputValidation.ReadInteger("Choose department: ", 1, departments.Count);
+        employee.DepartmentId = departments[choice - 1].Id;
+        employee.Salary = ReadSalary("Enter monthly salary (SEK): ");
+        employee.StartDay = DateOnly.FromDateTime(DateTime.Today);
+        employee.EndDay = null;
+
+        try
+        {
+            Employee newEmployee = employeeService.CreateNewEmployee(employee);
+            Console.WriteLine("New Employee Created");
+            Console.WriteLine(newEmployee);
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine($"Could not save employee: {ex.InnerException?.Message ?? ex.Message}");
+        }
+
         Console.WriteLine(separatorLine);
         return true;
+    }
+
+    private static decimal ReadSalary(string question)
+    {
+        const decimal maxSalary = 99_999_999.99m;
+
+        while (true)
+        {
+            Console.Write(question);
+            string? input = Console.ReadLine()?.Trim().Replace(',', '.');
+
+            if (decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal salary)
+                && salary > 0 && salary <= maxSalary)
+            {
+                return salary;
+            }
+
+            Console.WriteLine($"Invalid salary. Enter a number between 0.01 and {maxSalary}.");
+        }
     }
 }

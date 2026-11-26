@@ -220,6 +220,18 @@ public partial class SchoolContext : DbContext
                 .HasForeignKey(d => d.StudentGroupId)
                 .HasConstraintName("FK__Students__studen__5FB337D6");
         });
+        
+        modelBuilder.Entity<Employee>()
+            .ToTable(table => table.HasCheckConstraint("CK_Employees_SalaryPositive",
+                "employee_salary > 0"));
+        
+        modelBuilder.Entity<Employee>()
+            .ToTable(table => table.HasCheckConstraint("CK_Employees_EndAfterStart",
+                "employee_end_day IS NULL OR employee_end_day >= employee_start_day"));
+        
+        modelBuilder.Entity<Course>()
+            .ToTable(table => table.HasCheckConstraint("CK_Courses_EndAfterStart",
+                "course_end_day IS NULL OR course_end_day >= course_start_day"));
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -15,19 +15,19 @@ public partial class Employee
 
     [Column("employee_salary")]
     [Precision(10, 2)]
-    public decimal? Salary { get; set; }
+    public decimal Salary { get; set; }
 
     [Column("employee_start_day")]
-    public DateOnly? StartDay { get; set; }
+    public DateOnly StartDay { get; set; }
     
     [Column("employee_end_day")]
     public DateOnly? EndDay { get; set; }
     
     [Column("department_id")]
-    public int? DepartmentId { get; set; }
+    public int DepartmentId { get; set; }
 
     [DeleteBehavior(DeleteBehavior.Restrict)]
-    public Department? Department { get; set; }
+    public Department Department { get; set; } = new Department();
 
     public virtual ICollection<Grade> Grades { get; set; } = new List<Grade>();
 
