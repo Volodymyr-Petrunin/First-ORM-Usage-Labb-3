@@ -238,6 +238,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
     {
         using var context = new SchoolContext(dbContextOptions);
         var studentsService = new StudentsService(context);
+        var groupService = new GroupService(context);
 
         Student? foundStudent = studentsService
             .FindStudentById(inputValidation.ReadInteger("Write user id with you want update: ", 1, int.MaxValue));
@@ -250,7 +251,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         
         UpdateStudentNameAndSurname(foundStudent);
         UpdateStudentPersonalNumber(foundStudent);
-        UpdateStudentGroup(foundStudent);
+        UpdateStudentGroup(foundStudent, groupService);
 
         Student updatedStudent = studentsService.UpdateStudent(foundStudent);
         Console.WriteLine("Student updated: " + updatedStudent.ToString());
@@ -294,12 +295,9 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         }
     }
     
-    private void UpdateStudentGroup(Student foundStudent)
+    private void UpdateStudentGroup(Student foundStudent, GroupService groupService)
     {
         Console.WriteLine($"Updating student group: {foundStudent.StudentGroup.GroupName}");
-        
-        using var context = new SchoolContext(dbContextOptions);
-        var groupService = new GroupService(context);
 
         List<Group> groups = groupService.GetAllGroups();
         
