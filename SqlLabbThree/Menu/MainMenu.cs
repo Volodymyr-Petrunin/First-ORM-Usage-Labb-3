@@ -85,7 +85,11 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
             }
             case 4:
             {
-                return CountTeachersInDepartment(separatorLine);
+                return HandleCountTeachersInDepartment(separatorLine);
+            }
+            case 5:
+            {
+                return HandleListOfAllActiveCoursesTitle(separatorLine);
             }
             default:
             {
@@ -196,7 +200,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         }
     }
 
-    private bool CountTeachersInDepartment(string separatorLine)
+    private bool HandleCountTeachersInDepartment(string separatorLine)
     {
         using var context = new SchoolContext(dbContextOptions);
         var departmentService = new DepartmentService(context);
@@ -207,6 +211,21 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
             Console.WriteLine($"{departmentName}: {teachersCount}");
         }
         
+        Console.WriteLine(separatorLine);
+        return true;
+    }
+
+    private bool HandleListOfAllActiveCoursesTitle(string separatorLine)
+    {
+        using var context = new SchoolContext(dbContextOptions);
+        var courseService = new CourseService(context);
+        List<Course> activeCourses = courseService.GetAllActiveCourses();
+
+        foreach (var course in activeCourses)
+        {
+            Console.WriteLine($"{course.CourseName} - {course.StartDay} - {course.EndDay?.ToString() ?? "No end day was set"}");
+        }
+
         Console.WriteLine(separatorLine);
         return true;
     }
