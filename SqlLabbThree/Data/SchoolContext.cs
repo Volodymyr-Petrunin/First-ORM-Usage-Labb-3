@@ -237,4 +237,8 @@ public partial class SchoolContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    
+    [DbFunction("is_valid_personal_number", "dbo")]
+    public static bool IsValidPersonalNumberSql(string personalNumber) 
+        => throw new NotSupportedException("This function is not supported outside EF.");
 }

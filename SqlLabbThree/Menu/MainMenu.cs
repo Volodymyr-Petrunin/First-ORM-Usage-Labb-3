@@ -241,7 +241,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         var groupService = new GroupService(context);
 
         Student? foundStudent = studentsService
-            .FindStudentById(inputValidation.ReadInteger("Write user id with you want update: ", 1, int.MaxValue));
+            .FindStudentById(inputValidation.ReadInteger("Enter the id of the student to update: ", 1, int.MaxValue));
         
         if (foundStudent == null)
         {
@@ -250,7 +250,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         }
         
         UpdateStudentNameAndSurname(foundStudent);
-        UpdateStudentPersonalNumber(foundStudent);
+        UpdateStudentPersonalNumber(foundStudent, studentsService);
         UpdateStudentGroup(foundStudent, groupService);
 
         Student updatedStudent = studentsService.UpdateStudent(foundStudent);
@@ -281,17 +281,19 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         }
     }
     
-    private void UpdateStudentPersonalNumber(Student foundStudent)
+    private void UpdateStudentPersonalNumber(Student foundStudent, StudentsService studentsService)
     {
         Console.WriteLine($"Updating student personal number: {foundStudent.StudentPersonalNumber}");
-        Console.WriteLine("(Press Enter to keep current value)");
-        
-        Console.Write($"New personal number [{foundStudent.StudentPersonalNumber}]: ");
-        string? newPersonalNumber = Console.ReadLine();
-        
-        if (!string.IsNullOrWhiteSpace(newPersonalNumber))
+
+        string newPersonalNumber = inputValidation
+            .ReadPersonalNumber($"New personal number [{foundStudent.StudentPersonalNumber}]: ");
+
+        if (studentsService.IsPersonalNumberValid(newPersonalNumber))
         {
             foundStudent.StudentPersonalNumber = newPersonalNumber.Trim();
+        } else
+        {
+            Console.WriteLine("Personal number already in use or not valid. And was not updated.");
         }
     }
     

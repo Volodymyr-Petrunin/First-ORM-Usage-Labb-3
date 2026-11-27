@@ -38,6 +38,23 @@ public class StudentsService(SchoolContext context)
         return FindStudentById(student.StudentId);
     }
     
+    public bool IsPersonalNumberValid(string personalNumber)
+    {
+        if (IsPersonalNumberInUse(personalNumber))
+        {
+            return false;
+        }
+
+        return context.Students
+            .Select(_ => SchoolContext.IsValidPersonalNumberSql(personalNumber))
+            .FirstOrDefault();
+    }
+    
+    private bool IsPersonalNumberInUse(string personalNumber)
+    {
+        return context.Students.Any(student => student.StudentPersonalNumber == personalNumber);
+    }
+    
     private List<Student> SortStudents(IQueryable<Student> query, StudentSortField studentSortField, SortDirection sortDirection)
     {
         query = (studentSortField, sortDirection) switch
