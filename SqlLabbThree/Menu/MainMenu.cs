@@ -288,7 +288,11 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         string newPersonalNumber = inputValidation
             .ReadPersonalNumber($"New personal number [{foundStudent.StudentPersonalNumber}]: ");
 
-        if (studentsService.IsPersonalNumberValid(newPersonalNumber))
+        if (foundStudent.StudentPersonalNumber.Equals(newPersonalNumber))
+        {
+            Console.WriteLine("Personal number was not updated. Because it was the same as the current one.");
+        } 
+        else if (studentsService.IsPersonalNumberValid(newPersonalNumber))
         {
             foundStudent.StudentPersonalNumber = newPersonalNumber.Trim();
         } else
