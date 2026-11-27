@@ -89,7 +89,7 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
             }
             case 5:
             {
-                return HandleListOfAllActiveCoursesTitle(separatorLine);
+                return HandleListOfAllActiveCourses(separatorLine);
             }
             case 6:
             {
@@ -219,13 +219,13 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
         return true;
     }
 
-    private bool HandleListOfAllActiveCoursesTitle(string separatorLine)
+    private bool HandleListOfAllActiveCourses(string separatorLine)
     {
         using var context = new SchoolContext(dbContextOptions);
         var courseService = new CourseService(context);
         List<Course> activeCourses = courseService.GetAllActiveCourses();
 
-        foreach (var course in activeCourses)
+        foreach (Course course in activeCourses)
         {
             Console.WriteLine($"{course.CourseName} - {course.StartDay} - {course.EndDay?.ToString() ?? "No end day was set"}");
         }
