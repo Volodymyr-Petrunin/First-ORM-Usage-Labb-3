@@ -6,30 +6,22 @@ namespace SqlLabbThree;
 
 class Program
 {
-    private const string SchoolDbVariable = "SCHOOL_DB";
-    
-    private static readonly string? ConnectionString = Environment.GetEnvironmentVariable(SchoolDbVariable);
-    
-    private static readonly DbContextOptions<SchoolContext> DbContextOptions = new DbContextOptionsBuilder<SchoolContext>()
-                                                                   .UseSqlServer(ConnectionString)
-                                                                   .Options;
     static void Main(string[] args)
     {
-        if (string.IsNullOrEmpty(ConnectionString))
-        {
-            throw new InvalidOperationException($"Environment variable {SchoolDbVariable} is not set");
-        }
-
-        EnsureConnection();
+        var dbContextOptions = new DbContextOptionsBuilder<SchoolContext>()
+            .UseSqlServer(DatabaseSettings.GetConnectionString())
+            .Options;
+        
+        EnsureConnection(dbContextOptions);
 
         var consoleInputValidation = new ConsoleInputValidation();
-        var mainMenu = new MainMenu(DbContextOptions, consoleInputValidation);
+        var mainMenu = new MainMenu(dbContextOptions, consoleInputValidation);
         mainMenu.Show();
     }
     
-    private static void EnsureConnection()
+    private static void EnsureConnection(DbContextOptions<SchoolContext> dbContextOptions)
     {
-        using var context = new SchoolContext(DbContextOptions);
+        using var context = new SchoolContext(dbContextOptions);
         
         try
         {

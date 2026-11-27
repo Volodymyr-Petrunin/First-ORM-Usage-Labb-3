@@ -60,7 +60,7 @@ public class ConsoleInputValidation
         return new Employee(employeeName, employeeSurname, employeePersonalNumber);
     }
 
-    private string ReadPersonalNumber(string question)
+    public string ReadPersonalNumber(string question)
     {
         Console.WriteLine(question);
 
