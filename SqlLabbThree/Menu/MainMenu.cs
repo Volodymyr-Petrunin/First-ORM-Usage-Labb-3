@@ -91,6 +91,10 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
             {
                 return HandleListOfAllActiveCoursesTitle(separatorLine);
             }
+            case 6:
+            {
+                return HandleUpdateStudent(separatorLine);
+            }
             default:
             {
                 throw new UnreachableException($"Invalid input. Enter a number between 1 and {exitOptionIndex}."); 
@@ -228,5 +232,83 @@ public class MainMenu(DbContextOptions<SchoolContext> dbContextOptions, ConsoleI
 
         Console.WriteLine(separatorLine);
         return true;
+    }
+
+    private bool HandleUpdateStudent(string separatorLine)
+    {
+        using var context = new SchoolContext(dbContextOptions);
+        var studentsService = new StudentsService(context);
+
+        Student? foundStudent = studentsService
+            .FindStudentById(inputValidation.ReadInteger("Write user id with you want update: ", 1, int.MaxValue));
+        
+        if (foundStudent == null)
+        {
+            Console.WriteLine("Student not found");
+            return true;
+        }
+        
+        UpdateStudentNameAndSurname(foundStudent);
+        UpdateStudentPersonalNumber(foundStudent);
+        UpdateStudentGroup(foundStudent);
+
+        Student updatedStudent = studentsService.UpdateStudent(foundStudent);
+        Console.WriteLine("Student updated: " + updatedStudent.ToString());
+        Console.WriteLine(separatorLine);
+        return true;
+    }
+    
+    private void UpdateStudentNameAndSurname(Student foundStudent)
+    {
+        Console.WriteLine($"Updating student: {foundStudent.StudentName} {foundStudent.StudentSurname}");
+        Console.WriteLine("(Press Enter to keep current value)");
+
+        Console.Write($"New first name [{foundStudent.StudentName}]: ");
+        string? newFirstName = Console.ReadLine();
+        
+        if (!string.IsNullOrWhiteSpace(newFirstName))
+        {
+            foundStudent.StudentName = newFirstName.Trim();
+        }
+
+        Console.Write($"New last name [{foundStudent.StudentSurname}]: ");
+        string? newLastName = Console.ReadLine();
+        
+        if (!string.IsNullOrWhiteSpace(newLastName))
+        {
+            foundStudent.StudentSurname = newLastName.Trim();
+        }
+    }
+    
+    private void UpdateStudentPersonalNumber(Student foundStudent)
+    {
+        Console.WriteLine($"Updating student personal number: {foundStudent.StudentPersonalNumber}");
+        Console.WriteLine("(Press Enter to keep current value)");
+        
+        Console.Write($"New personal number [{foundStudent.StudentPersonalNumber}]: ");
+        string? newPersonalNumber = Console.ReadLine();
+        
+        if (!string.IsNullOrWhiteSpace(newPersonalNumber))
+        {
+            foundStudent.StudentPersonalNumber = newPersonalNumber.Trim();
+        }
+    }
+    
+    private void UpdateStudentGroup(Student foundStudent)
+    {
+        Console.WriteLine($"Updating student group: {foundStudent.StudentGroup.GroupName}");
+        
+        using var context = new SchoolContext(dbContextOptions);
+        var groupService = new GroupService(context);
+
+        List<Group> groups = groupService.GetAllGroups();
+        
+        for (int index = 0; index < groups.Count; index++)
+        {
+            Console.WriteLine($"{index + 1}. {groups[index].GroupName}");
+        }
+
+        int choice = inputValidation.ReadInteger("Choose group: ", 1, groups.Count);
+        foundStudent.StudentGroup = groups[choice - 1];
     }
 }

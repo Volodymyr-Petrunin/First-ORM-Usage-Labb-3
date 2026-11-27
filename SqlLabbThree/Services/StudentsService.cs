@@ -23,6 +23,21 @@ public class StudentsService(SchoolContext context)
         return SortStudents(query, studentSortField, sortDirection);
     }
     
+    public Student? FindStudentById(int studentId)
+    {
+        return context.Students
+            .Include(student => student.StudentGroup)
+            .FirstOrDefault(student => student.StudentId == studentId);
+    }
+    
+    public Student UpdateStudent(Student student)
+    {
+        context.Students.Update(student);
+        context.SaveChanges();
+        
+        return FindStudentById(student.StudentId);
+    }
+    
     private List<Student> SortStudents(IQueryable<Student> query, StudentSortField studentSortField, SortDirection sortDirection)
     {
         query = (studentSortField, sortDirection) switch
